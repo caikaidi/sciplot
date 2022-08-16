@@ -17,24 +17,29 @@ class SciPlot:
 
     def __init__(self, *args, **kwargs) -> None:
         """
-        Initialize rc parameters and variables.
+        Use `rcParams` to control global settings is good.
         """
         self.colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728',
                        '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22']
+        self.style_0 = cycler('color', [None] * 10)
+        self.style_1 = cycler('marker', ['v', 'o', 's', 'd', '^', '*', 'X', 'h', 'p', 'P'])
+        self.style_2 = cycler('linestyle', ['-', '--', ':', '-.']) * cycler('marker', ['v', 'o', 's', 'd']) * cycler(
+            'fillstyle', ['none']) * cycler('markeredgewidth', [2])
+        self.style = [self.style_0, self.style_1, self.style_2]
+        self.current_style: int = 0
+
         self.data = None
         self.x: Optional[Sequence] = None
         self.y: Optional[Sequence] = None
         self.label: Optional[Sequence] = None
         self.legend: Optional[Sequence] = None
-        self.line_style_cycle = cycler('ls', ['-', '--', '-.', ':', '-', '--', '-.', ':', '-']) \
-                                + cycler('marker', ['', '', '', '', 'v', 'o', 's', 'd', '>'])
 
         # Figure size
         plt.rcParams['figure.figsize'] = (8, 6)
         plt.rcParams['figure.dpi'] = 100
 
         # Margin
-        plt.rcParams['figure.subplot.left'] = 0.12
+        plt.rcParams['figure.subplot.left'] = 0.135
         plt.rcParams['figure.subplot.right'] = 0.98
         plt.rcParams['figure.subplot.bottom'] = 0.15
         plt.rcParams['figure.subplot.top'] = 0.98
@@ -42,7 +47,7 @@ class SciPlot:
         # Font
         plt.rcParams['font.family'] = 'Times New Roman'
         plt.rcParams['mathtext.fontset'] = 'stix'
-        # Font size: about 12px, 27 for 10.5 px, 23 for 9 px
+        # Font size: about 12pt, 27 for 10.5 pt, 23 for 9 pt
         # 字体大小：30 = 小四, 27 = 五号, 23 = 小五 （大概）
         plt.rcParams['font.size'] = 30
 
@@ -62,8 +67,6 @@ class SciPlot:
 
         plt.rcParams['lines.linewidth'] = 3
         plt.rcParams['lines.markersize'] = 13
-        plt.rcParams['lines.markeredgewidth'] = 2
-        plt.rcParams['markers.fillstyle'] = 'none'
 
         plt.rcParams['legend.edgecolor'] = 'k'
 
@@ -111,22 +114,16 @@ class SciPlot:
         self.label = label
         self.legend = legend
 
-    @staticmethod
-    def updateline(handle, orig):
-        handle.update_from(orig)
-        # handle.set_markersize(13)
-
-    def plot_data(self, ls_cycle: bool = True) -> None:
+    def plot_data(self, linestyle: int = 0) -> None:
         """
         Plot data that loaded before.
         So load before you plot.
-        :param: ls_cycle: line style cycle.
+        :param: linestyle: Three kind of line styles are supported, choose by 0, 1, 2.
         :return: None.
         """
-        if ls_cycle:
-            line_style_cycle = self.line_style_cycle
-        else:
-            line_style_cycle = cycler('color', self.colors)
+        assert linestyle in [0, 1, 2], 'Line style should be 0, 1, or 2.'
+        self.current_style = linestyle
+        line_style_cycle = self.style[linestyle]
 
         if len(np.shape(self.x)) == 2:
             for x, y, sty in zip(self.x, self.y, line_style_cycle):
@@ -167,34 +164,35 @@ class SciPlot:
     def plot_legend(self):
         if self.legend is None:
             raise RuntimeError('No legend is given.')
+        handle_length = 1 if self.current_style == 0 else 1.9
+        self.ax.legend(self.legend, handlelength=handle_length, fontsize=23, fancybox=False)
 
-        self.ax.legend(self.legend, handlelength=2, fontsize=18,
-                       handler_map={plt.Line2D: HandlerLine2D(update_func=self.updateline)},
-                       fancybox=False)
-
-    def plot_tag(self, tag: str, loc=2):
+    def plot_tag(self, tag: str, loc: int = 2):
+        """
+        Plot tag like '(a)'.
+        :param tag: Tag in string. Don't forget the bracket.
+        :param loc: 1 for upper left, 2 for upper right. Tuple (x, y) for custom location.
+        :return: None.
+        """
+        x, y = 0.95, 0.93  # Default upper right
         if type(loc) == tuple:  # custom location
             x, y = loc
         else:
-            x, y = 0.95, 0.93  # upper right
             if loc == 1:  # upper left
-                x = 0.1
+                x, y = 0.10, 0.93
         self.ax.text(x, y, tag, horizontalalignment='center',
                      verticalalignment='center', transform=self.ax.transAxes)
 
-    def show(self, auto_tight=False):
+    def show(self, auto_tight: bool = True):
         if auto_tight:
-            self.fig.tight_layout()
+            self.fig.tight_layout(pad=0.15)
         plt.show()
 
     def auto_plot(self, x, y, **kwargs):
-        self.plot_figure()
 
-        if np.shape(y)[0] < 9:  # y in shape of [[curve1],[curve2],[curve3]]
-            for i in range(len(y)):
-                self.ax.plot(x, y[i])
-        else:  # y in shape of [data1, data2, ...]
-            self.ax.plot(x, y)
+        self.x = x
+        self.y = y
+        self.plot_data()
 
         if 'legend' in kwargs:
             self.legend = kwargs['legend']
