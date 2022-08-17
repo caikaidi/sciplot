@@ -7,10 +7,8 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.legend_handler import HandlerLine2D
-# from matplotlib import rc
 from cycler import cycler
-from typing import Sequence, Optional
+from typing import Sequence, Optional, Iterable
 
 
 class SciPlot:
@@ -75,10 +73,11 @@ class SciPlot:
         if len(args) != 0:
             self.auto_plot(*args, **kwargs)
 
-    def load_npz(self, filename: str):
+    def load_npz(self, filename: str) -> None:
         """
         Load data from *.npz. 
-        Data should be packed with index x, y, label, and legend.
+        Data should be packed with index x, y, label, and legend. Means:
+        np.savez(filename, x=x, y=y, label=label, legend=legend)
         """
         self.data = np.load(filename)
         try:
@@ -102,11 +101,44 @@ class SciPlot:
             print(e)
             self.legend = None
 
-    def load_txt(self, index: list[str]):
-        pass
+    def load_txt(self, filename: str, index: list[str], split: str = ' ') -> None:
+        """
+        A row of the text file should be like: x y_of_curve_1 y_of_curve_2 ...
+        :param filename: You don't necessarily add '.txt' since this is build specifically for txt files.
+        :param index: A list of column names. This tells the program how many columns you got and which on is x.
+        :param split: How you split the data in a row, default space, alternatively you can use ';', ',', et al.
+        :return: None.
+        """
+        with open(filename, 'r') as f:
+            file = f.readlines()
+        file_data = []
+        for row in file:
+            file_data.append(row.strip('\n').split(split))
+        file_data = np.array(file_data, dtype=float)
+        data = {}
+        for i, column_name in enumerate(index):
+            data[column_name] = file_data[:, i]
+        if 'x' in data:
+            self.x = data.pop('x')
+        else:
+            self.x = data.pop(next(iter(data)))
+        self.y = list(data.values())
 
-    def load_csv(self):
-        pass
+    def load_csv(self, filename: str):
+        """
+        Made for my use case only. Of which the beginning 21 lines are bullshit, and last line is empty.
+        Data have two columns, x and y.
+        :param filename:
+        :return:
+        """
+        import csv
+        with open(filename, 'r') as f:
+            file = list(csv.reader(f))
+            file.pop()
+            data = file[21:]
+        data = np.array(data, dtype=float)
+        self.x = data[:, 0]
+        self.y = data[:, 1]
 
     def manual_load(self, x: Sequence, y: Sequence, label: Sequence, legend: Sequence):
         self.x = x
@@ -114,16 +146,20 @@ class SciPlot:
         self.label = label
         self.legend = legend
 
-    def plot_data(self, linestyle: int = 0) -> None:
+    def plot_data(self, linestyle: int = 0, cycler: Optional[Iterable] = None) -> None:
         """
         Plot data that loaded before.
         So load before you plot.
-        :param: linestyle: Three kind of line styles are supported, choose by 0, 1, 2.
+        :param linestyle: Three kind of line styles are supported, choose by 0, 1, 2.
+        :param cycler:
         :return: None.
         """
         assert linestyle in [0, 1, 2], 'Line style should be 0, 1, or 2.'
         self.current_style = linestyle
-        line_style_cycle = self.style[linestyle]
+        if cycler is not None:
+            line_style_cycle: Iterable = cycler
+        else:
+            line_style_cycle = self.style[linestyle]
 
         if len(np.shape(self.x)) == 2:
             for x, y, sty in zip(self.x, self.y, line_style_cycle):
@@ -151,17 +187,21 @@ class SciPlot:
                 self.ax.set_xlabel(args[0][0])
                 self.ax.set_ylabel(args[0][1])
             except IndexError:
-                raise IndexError('label should be given by [\'x\',\'y\']')
+                raise IndexError('Label should be given by [\'x\',\'y\']')
             return
         if self.label is not None:
             try:
                 self.ax.set_xlabel(self.label[0])
                 self.ax.set_ylabel(self.label[1])
             except IndexError:
-                raise IndexError('label should be given by [\'x\',\'y\']')
+                raise IndexError('Label should be given by [\'x\',\'y\']')
             return
 
-    def plot_legend(self):
+    def plot_legend(self, *args):
+        if len(args) == 1:
+            self.legend = args[0]
+        elif len(args) > 1:
+            raise RuntimeError('Legend should be given in a list [\'line 1\', \'line 2\', ...].')
         if self.legend is None:
             raise RuntimeError('No legend is given.')
         handle_length = 1 if self.current_style == 0 else 1.9
