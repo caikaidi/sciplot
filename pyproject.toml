@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "sciplot"
+name = "diego-plot"
 version = "1.0"
 authors = [
   { name="diego", email="caikaidi@caikaidi.cn" },

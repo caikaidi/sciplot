@@ -22,7 +22,7 @@ pip install sciplot
 
 Import the package:
 ```python
-from sciplot import sciplot
+from diego_plot import sciplot
 ```
 ## mini demo
 
@@ -33,7 +33,7 @@ Optionally, label, legend, and tag could be given as keyword arguments.
 ```python
 # This demo gives the figure (a) above.
 import numpy as np
-from sciplot import sciplot
+from diego_plot import sciplot
 
 x = np.linspace(0, 10, 100)
 y = np.array([(a + 1) * np.sin(x) for a in range(4)])
@@ -61,7 +61,7 @@ There are up to 6 steps: load data, plot data, plot label, plot legend, plot tag
 ```python
 # This demo gives the figure (b) above.
 import numpy as np
-from sciplot import sciplot
+from diego_plot import sciplot
 
 x = np.linspace(0, 10, 30)
 y = np.array([(a + 1) * np.sin(x) for a in range(4)])
