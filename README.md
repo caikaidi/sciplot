@@ -15,10 +15,14 @@ A scientific style plot tool based on matplotlib.
 
 ## Install
 
-This project hasn't been uploaded to `pipy` yet. 
-It is so small that you should just copy the `sciplot.py` to your data folder and do
+Install by pip:
+```shell
+pip install sciplot
+```
+
+Import the package:
 ```python
-from sciplot import SciPlot
+from sciplot import sciplot
 ```
 ## mini demo
 
@@ -29,14 +33,14 @@ Optionally, label, legend, and tag could be given as keyword arguments.
 ```python
 # This demo gives the figure (a) above.
 import numpy as np
-from sciplot import SciPlot
+from sciplot import sciplot
 
 x = np.linspace(0, 10, 100)
 y = np.array([(a + 1) * np.sin(x) for a in range(4)])
-SciPlot(x, y,
-        label=['x-axis', 'y-axis'],
-        legend=['line {}'.format(n + 1) for n in range(4)],
-        tag='(a)')
+sciplot.SciPlot(x, y,
+                label=['x-axis', 'y-axis'],
+                legend=['line {}'.format(n + 1) for n in range(4)],
+                tag='(a)')
 ```
 
 The data, `x` and `y`, could be in different kinds of.
@@ -57,14 +61,15 @@ There are up to 6 steps: load data, plot data, plot label, plot legend, plot tag
 ```python
 # This demo gives the figure (b) above.
 import numpy as np
-from sciplot import SciPlot
+from sciplot import sciplot
+
 x = np.linspace(0, 10, 30)
 y = np.array([(a + 1) * np.sin(x) for a in range(4)])
-sp = SciPlot()
+sp = sciplot.SciPlot()
 sp.manual_load(x, y, ['x-axis', 'y-axis'], ['line {}'.format(n + 1) for n in range(4)])
 sp.plot_data(1)  # 1 for style 1. Currently, there are 3 built in styles, 0, 1, and 2. 
-                 # Corresponding to figure (a), (b), and (c).
-                 
+# Corresponding to figure (a), (b), and (c).
+
 sp.plot_label()  # Optionally, label can be given here as a parameter.
 sp.plot_legend()  # Optionally, legend can be given here as a parameter.
 
