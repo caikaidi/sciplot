@@ -1,6 +1,6 @@
 #  -*- coding: UTF-8 -*-
 #
-#  sciplot.py
+#  diegoplot.py
 #
 #  Created by Diego on 2022/08/15 19:25:48.
 #  Copyright © Diego. All rights reserved.
@@ -11,7 +11,7 @@ from cycler import cycler
 from typing import Sequence, Optional, Iterable
 
 
-class SciPlot:
+class DiegoPlot:
 
     def __init__(self, *args, **kwargs) -> None:
         """
