@@ -17,12 +17,22 @@ A scientific style plot tool based on matplotlib.
 
 Install by pip:
 ```shell
-pip install sciplot
+pip install diegoplot
 ```
+
+>(This project was intended to be called as sciplot, but there is already a sciplot in pipy.
+> Thus I just named it by my name as diegoplot.)
 
 Import the package:
 ```python
-from diegoplot import DiegoPlot
+from diegoplot import diegoplot
+diegoplot.DiegoPlot()
+```
+
+Or, you can copy the `diegoplot.py` file into the folder of your project and import it by:
+```python
+import diegoplot
+diegoplot.DiegoPlot()
 ```
 ## mini demo
 
@@ -33,14 +43,14 @@ Optionally, label, legend, and tag could be given as keyword arguments.
 ```python
 # This demo gives the figure (a) above.
 import numpy as np
-from diegoplot import DiegoPlot
+from diegoplot import diegoplot
 
 x = np.linspace(0, 10, 100)
 y = np.array([(a + 1) * np.sin(x) for a in range(4)])
-DiegoPlot.SciPlot(x, y,
-                label=['x-axis', 'y-axis'],
-                legend=['line {}'.format(n + 1) for n in range(4)],
-                tag='(a)')
+diegoplot.DiegoPlot(x, y,
+                    label=['x-axis', 'y-axis'],
+                    legend=['line {}'.format(n + 1) for n in range(4)],
+                    tag='(a)')
 ```
 
 The data, `x` and `y`, could be in different kinds of.
@@ -61,20 +71,20 @@ There are up to 6 steps: load data, plot data, plot label, plot legend, plot tag
 ```python
 # This demo gives the figure (b) above.
 import numpy as np
-from diegoplot import DiegoPlot
+from diegoplot import diegoplot
 
 x = np.linspace(0, 10, 30)
 y = np.array([(a + 1) * np.sin(x) for a in range(4)])
-sp = DiegoPlot()
-sp.manual_load(x, y, ['x-axis', 'y-axis'], ['line {}'.format(n + 1) for n in range(4)])
-sp.plot_data(1)  # 1 for style 1. Currently, there are 3 built in styles, 0, 1, and 2. 
+dp = diegoplot.DiegoPlot()
+dp.manual_load(x, y, ['x-axis', 'y-axis'], ['line {}'.format(n + 1) for n in range(4)])
+dp.plot_data(1)  # 1 for style 1. Currently, there are 3 built in styles, 0, 1, and 2. 
 # Corresponding to figure (a), (b), and (c).
 
-sp.plot_label()  # Optionally, label can be given here as a parameter.
-sp.plot_legend()  # Optionally, legend can be given here as a parameter.
+dp.plot_label()  # Optionally, label can be given here as a parameter.
+dp.plot_legend()  # Optionally, legend can be given here as a parameter.
 
-sp.plot_tag('(b)')  # The position of the tag is configurable, see annotation of this function.
-sp.show()  # Comes with an auto-tight function. Pass through auto_tight=False to disable it.
+dp.plot_tag('(b)')  # The position of the tag is configurable, see annotation of this function.
+dp.show()  # Comes with an auto-tight function. Pass through auto_tight=False to disable it.
 ```
 
 Apart those steps means you can write your own, customized ones. Or add some operations before `show()`.
@@ -84,18 +94,18 @@ You should see the documentation of `matplotlib` for more, but I'll list some us
 
 ```python
 # axis span range
-sp.ax.set_xlim([0, 1])
-sp.ax.set_ylim([0, 1])
+dp.ax.set_xlim([0, 1])
+dp.ax.set_ylim([0, 1])
 # where are the scale lines
-sp.ax.set_xticks([0, 0.5, 1])
-sp.ax.set_yticks([0, 0.5, 1])
+dp.ax.set_xticks([0, 0.5, 1])
+dp.ax.set_yticks([0, 0.5, 1])
 # plot text, lines, annotates
-sp.ax.text()
-sp.ax.hline()
-sp.ax.vline()
-sp.ax.annotate()
+dp.ax.text()
+dp.ax.hline()
+dp.ax.vline()
+dp.ax.annotate()
 # create another y-axis
-ax2 = sp.ax.twinx()  
+ax2 = dp.ax.twinx()  
 ```
 
 ## Load data
