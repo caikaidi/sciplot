@@ -62,6 +62,18 @@ The data, `x` and `y`, could be in different kinds of.
   just give both `x` and `y` in the form of `[[...],[...],...]`.
   And make sure they are within the same length.
 
+## Use style and semilog
+
+There are 3 built-in styles, 0, 1, and 2, as shown in the figure above.
+And semilog plot is also supported now.
+To use built-in style and semilog plot, the easiest way is to use the `autoplot` feature.
+
+```python
+diegoplot.Diegoplot(x, y, linestyle=1, log_y=True)
+```
+
+To use custom style, see the Fine tuning section below.
+
 ## Fine tuning
 
 A fine-tuning is needed to generate the final product.
